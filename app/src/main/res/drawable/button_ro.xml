@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Black Theme -->
+    <item android:state_enabled="true" android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#616161" /> <!-- Dark grey color when pressed -->
+            <corners android:radius="8dp" /> <!-- Adjust radius as needed -->
+        </shape>
+    </item>
+    <item android:state_enabled="true" android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#757575" /> <!-- Light grey color when focused -->
+            <corners android:radius="8dp" /> <!-- Adjust radius as needed -->
+        </shape>
+    </item>
+    <item android:state_enabled="true">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="@color/primary"
+                android:endColor="@color/primary"
+                android:angle="45" /> <!-- Gradient colors -->
+            <corners android:radius="8dp" /> <!-- Adjust radius as needed -->
+        </shape>
+    </item>
+
+    <!-- White Theme -->
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <solid android:color="#BDBDBD" /> <!-- Light grey color when disabled -->
+            <corners android:radius="8dp" /> <!-- Adjust radius as needed -->
+        </shape>
+    </item>
+
+</selector>

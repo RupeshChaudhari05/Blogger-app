@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.Waller.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/widg_tra"
+    android:theme="@style/Theme.Waller.AppWidgetContainer">
+
+        <LinearLayout
+            android:gravity="center"
+            android:id="@+id/layout_quotes_parent_view"
+
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/llBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_menu_quote"
+                    android:layout_above="@+id/appwidget_text"
+                    android:layout_marginStart="15dp"/>
+
+                <TextView
+                    android:id="@+id/appwidget_text"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="42dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="42dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/bold"
+                    android:gravity="center"
+                    android:text="@string/app_name"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textColor="@android:color/white" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_below="@+id/appwidget_text"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="15dp"
+                    android:rotation="180"
+                    android:src="@drawable/ic_menu_quote" />
+
+
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+</RelativeLayout>
