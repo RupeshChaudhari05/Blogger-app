@@ -7,32 +7,65 @@ import com.blogger.wallpaper.AppConfig;
 import com.blogger.wallpaper.BuildConfig;
 import com.blogger.wallpaper.R;
 
-import dreamspace.ads.sdk.AdConfig;
-import dreamspace.ads.sdk.AdNetwork;
-import dreamspace.ads.sdk.gdpr.GDPR;
-import dreamspace.ads.sdk.gdpr.LegacyGDPR;
-import dreamspace.ads.sdk.listener.AdBannerListener;
+/**
+ * AdNetworkHelper - Manages ad network integration
+ * 
+ * CURRENT STATUS: Ad network disabled
+ * REASON: Dream Space Ads SDK artifact is unavailable (dependency resolution error)
+ * 
+ * Future Implementation Options:
+ * 1. Replace with native AdMob implementation (recommended)
+ * 2. Use alternative ad network (Google Ads, Facebook Audience Network, etc.)
+ * 3. Wait for Dream Space SDK to become available
+ * 
+ * To enable ads:
+ * - Uncomment the import statements below
+ * - Replace the stub methods with actual ad network calls
+ * - Update AppConfig with correct ad unit IDs
+ */
+
+// import dreamspace.ads.sdk.AdConfig;
+// import dreamspace.ads.sdk.AdNetwork;
+// import dreamspace.ads.sdk.gdpr.LegacyGDPR;
+// import dreamspace.ads.sdk.gdpr.GDPR;
+// import dreamspace.ads.sdk.listener.AdBannerListener;
 
 public class AdNetworkHelper {
 
     private Activity activity;
-    private AdNetwork adNetwork;
-    private LegacyGDPR legacyGDPR;
-    private GDPR gdpr;
+    // private AdNetwork adNetwork;
+    // private LegacyGDPR legacyGDPR;
+    // private GDPR gdpr;
 
     public AdNetworkHelper(Activity activity) {
         this.activity = activity;
-        adNetwork = new AdNetwork(activity);
-        legacyGDPR = new LegacyGDPR(activity);
-        gdpr = new GDPR(activity);
+        // TODO: Initialize ad network when implementation is ready
+        // adNetwork = new AdNetwork(activity);
+        // legacyGDPR = new LegacyGDPR(activity);
+        // gdpr = new GDPR(activity);
     }
 
+    /**
+     * Update GDPR consent status for ad targeting
+     * Currently disabled pending ad network availability
+     */
     public void updateConsentStatus() {
         if (!AppConfig.ads.ad_enable || !AppConfig.ads.ad_enable_gdpr) return;
-        gdpr.updateGDPRConsentStatus();
+        // TODO: Implement when ad network is available
+        // gdpr.updateGDPRConsentStatus();
     }
 
+    /**
+     * Initialize ad network configuration
+     * Called once during app startup from ThisApp.initAds()
+     * Currently disabled - no-op implementation
+     */
     public static void init(Context context) {
+        if (BuildConfig.DEBUG) {
+            android.util.Log.d("AdNetworkHelper", "Ad network initialization skipped - ads disabled");
+        }
+        // TODO: Uncomment ad network initialization when available
+        /*
         AdConfig.ad_enable = AppConfig.ads.ad_enable;
         AdConfig.debug_mode = BuildConfig.DEBUG;
         AdConfig.enable_gdpr = true;
@@ -58,22 +91,42 @@ public class AdNetworkHelper {
         AdConfig.ad_applovin_interstitial_unit_id = AppConfig.ads.ad_applovin_interstitial_unit_id;
 
         AdNetwork.init(context);
+        */
     }
 
-    public void loadBannerAd(boolean enable, AdBannerListener listener) {
-        adNetwork.loadBannerAd(enable, activity.findViewById(R.id.ad_container), listener);
-    }
-
+    /**
+     * Load banner ad for the given container
+     * Currently disabled - no-op implementation
+     * 
+     * @param enable whether to attempt loading the ad
+     */
     public void loadBannerAd(boolean enable) {
-        adNetwork.loadBannerAd(enable, activity.findViewById(R.id.ad_container));
+        // TODO: Implement when ad network is available
+        // adNetwork.loadBannerAd(enable, activity.findViewById(R.id.ad_container));
     }
 
+    /**
+     * Load interstitial ad
+     * Currently disabled - no-op implementation
+     * 
+     * @param enable whether to attempt loading the ad
+     */
     public void loadInterstitialAd(boolean enable) {
-        adNetwork.loadInterstitialAd(enable);
+        // TODO: Implement when ad network is available
+        // adNetwork.loadInterstitialAd(enable);
     }
 
+    /**
+     * Show interstitial ad if available
+     * Currently disabled - always returns false
+     * 
+     * @param enable whether to attempt showing the ad
+     * @return false as ads are currently disabled
+     */
     public boolean showInterstitialAd(boolean enable) {
-        return adNetwork.showInterstitialAd(enable);
+        // TODO: Implement when ad network is available
+        // return adNetwork.showInterstitialAd(enable);
+        return false;
     }
 
 }

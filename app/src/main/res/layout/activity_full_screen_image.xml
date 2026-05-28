@@ -39,6 +39,24 @@
                 app:srcCompat="@drawable/ic_close"
                 app:tint="@color/white" />
 
+            <ImageButton
+                android:id="@+id/btn_toggle_text"
+                android:layout_width="@dimen/spacing_36"
+                android:layout_height="@dimen/spacing_36"
+                android:layout_marginStart="@dimen/spacing_8"
+                android:background="@drawable/button_overlay"
+                app:srcCompat="@drawable/ic_format"
+                app:tint="@color/white" />
+
+            <ImageButton
+                android:id="@+id/btn_options"
+                android:layout_width="@dimen/spacing_36"
+                android:layout_height="@dimen/spacing_36"
+                android:layout_marginStart="@dimen/spacing_8"
+                android:background="@drawable/button_overlay"
+                app:srcCompat="@drawable/ic_settings"
+                app:tint="@color/white" />
+
         </LinearLayout>
 
     </androidx.appcompat.widget.Toolbar>

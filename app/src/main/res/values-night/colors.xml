@@ -20,57 +20,11 @@
     <color name="dot1">#F4511E</color>
     <color name="dot2">#D1022F</color>
     <color name="dot3">#6700FF</color>
-    <color name="button_color">#FFFFFF</color>
 
-    <color name="MainMenu">#90a4ae</color>
-    <color name="MainOpacityText">#30000000</color>
-    <color name="MainSecText">#9e9e9e</color>
-    <color name="MainSecondText">#90a4ae</color>
-    <color name="MainText">#000000</color>
-    <color name="MainUploadBG">#ededed</color>
-    <color name="MainUploadTint">#7a7d82</color>
-    <color name="SubscribeBG">#8090a4ae</color>
-    <color name="SubscriptionBG">#f7f8fa</color>
-
-
-    <color name="bg_menus">#9872e4</color>
-    <color name="bg_menu">#9872e4</color>
-    <color name="bg_menu_back">#409872E4</color>
-    <color name="bg_menu_light">#7a7d82</color>
-    <color name="black_light">#333</color>
-    <color name="blue">#2196f3</color>
-
-    <color name="mainthirty">#30000000</color>
-
-    <color name="pick1">#F44336</color>
-    <color name="pick2">#00BCD4</color>
-    <color name="pick3">#009688</color>
-    <color name="pick4">#FF5722</color>
-    <color name="pick5">#E91E63</color>
-    <color name="pick6">#03A9F4</color>
-    <color name="pick7">#4CAF50</color>
-    <color name="pick8">#FF9800</color>
-    <color name="pick9">#9C27B0</color>
-    <color name="pick10">#2196F3</color>
-    <color name="pick11">#8BC34A</color>
-    <color name="pick12">#FFC107</color>
-    <color name="pick13">#673AB7</color>
-    <color name="pick14">#3F51B5</color>
-    <color name="pick15">#CDDC39</color>
-    <color name="pick16">#FFEB3B</color>
-    <color name="pick17">#000000</color>
-    <color name="pick18">#FFFFFF</color>
 
     <!--do not change this-->
-    <color name="gnt_white">#FFFFFF</color>
-    <color name="gnt_ad_green">#3A6728</color>
     <color name="gnt_ad_yellow">#FBB828</color>
     <color name="gnt_gray">#808080</color>
-
-    <color name="colorBack1">#5E35B1</color>
-    <color name="colorBack2">#8E24AA</color>
-
-    <color name="bgMain">#ffffff</color>
 
 
     <color name="color1">#99004C</color>
@@ -85,20 +39,5 @@
     <color name="color10">#A0A0A0</color>
     <color name="color11">#EFCC4F</color>
     <color name="color12">#94EFCC4F</color>
-    <color name="color13">#FFFFE0</color>
-    <color name="color14">#008000</color>
-    <color name="color15">#808000</color>
-    <color name="color16">#6B8E23</color>
-    <color name="color17">#00BFFF</color>
-    <color name="color18">#1E90FF</color>
-    <color name="color19">#7B68EE</color>
-    <color name="color20">#FF00FF</color>
-    <color name="color21">#800080</color>
-    <color name="color22">#FF69B4</color>
-    <color name="color23">#FFE4E1</color>
-    <color name="color24">#778899</color>
-    <color name="color25">#BC8F8F</color>
-    <color name="color26">#CD853F</color>
-    <color name="color27">#A0522D</color>
 
 </resources>

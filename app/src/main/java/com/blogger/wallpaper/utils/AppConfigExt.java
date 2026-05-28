@@ -1,13 +1,11 @@
 package com.blogger.wallpaper.utils;
 
-import android.util.Log;
-
 import com.blogger.wallpaper.AppConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
 import java.util.Objects;
-
-import dreamspace.ads.sdk.data.AdNetworkType;
 
 public class AppConfigExt {
 
@@ -19,23 +17,43 @@ public class AppConfigExt {
     public static final String BLOGGER_URL_ALL_POST_TOP_ONE = "https://www.googleapis.com/blogger/v3/blogs/" + BLOG_ID + "/posts?key=" + API_KEY + "&maxResults=1";
     public  static final String BLOGGER_URL_PAGES = "https://www.googleapis.com/blogger/v3/blogs/" + BLOG_ID + "/pages?key=" + API_KEY;
     public static final String BLOGGER_SEARCH_URL = "https://www.googleapis.com/blogger/v3/blogs/" + BLOG_ID + "/posts/search?key=" + API_KEY + "&maxResults=10";
-    public static String geturl(String type,String url,String pagetoken) {
-        String token = (!pagetoken.isEmpty()) ? "&pageToken=" + pagetoken:"";
-        if(Objects.equals(type, CATEGORY)){
-        if (url != null && !url.isEmpty()) {
-            return BLOGGER_URL_ALL_POST + "&labels=" + url + token;
-        } else {
-            return BLOGGER_URL_ALL_POST + token;
-        }
-        }else if(Objects.equals(type, SEARCH)){
-
-            if (url != null && !url.isEmpty()) {
-                return BLOGGER_SEARCH_URL + "&q=" + url + token;
-            }else{
-                return BLOGGER_SEARCH_URL+token;
+    public static String geturl(String type, String url, String pagetoken) {
+        String token = (!pagetoken.isEmpty()) ? "&pageToken=" + pagetoken : "";
+        try {
+            if (Objects.equals(type, CATEGORY)) {
+                if (url != null && !url.isEmpty()) {
+                    String encodedLabel = URLEncoder.encode(url, "UTF-8");
+                    return BLOGGER_URL_ALL_POST + "&labels=" + encodedLabel + "&orderBy=published" + token;
+                } else {
+                    return BLOGGER_URL_ALL_POST + "&orderBy=published" + token;
+                }
+            } else if (Objects.equals(type, SEARCH)) {
+                if (url != null && !url.isEmpty()) {
+                    String encodedQuery = URLEncoder.encode(url, "UTF-8");
+                    return BLOGGER_SEARCH_URL + "&q=" + encodedQuery + "&orderBy=published" + token;
+                } else {
+                    return BLOGGER_SEARCH_URL + "&orderBy=published" + token;
+                }
+            } else {
+                return BLOGGER_URL_ALL_POST + "&orderBy=published" + token;
             }
-        }else {
-            return BLOGGER_URL_ALL_POST + token;
+        } catch (UnsupportedEncodingException e) {
+            // Fallback to unencoded if encoding fails
+            if (Objects.equals(type, CATEGORY)) {
+                if (url != null && !url.isEmpty()) {
+                    return BLOGGER_URL_ALL_POST + "&labels=" + url + "&orderBy=published" + token;
+                } else {
+                    return BLOGGER_URL_ALL_POST + "&orderBy=published" + token;
+                }
+            } else if (Objects.equals(type, SEARCH)) {
+                if (url != null && !url.isEmpty()) {
+                    return BLOGGER_SEARCH_URL + "&q=" + url + "&orderBy=published" + token;
+                } else {
+                    return BLOGGER_SEARCH_URL + "&orderBy=published" + token;
+                }
+            } else {
+                return BLOGGER_URL_ALL_POST + "&orderBy=published" + token;
+            }
         }
     }
     /* --------------- DONE EDIT CODE BELOW ------------------------------------------------------ */
@@ -85,7 +103,7 @@ public class AppConfigExt {
         }
         if (!remote.getString("ad_network").isEmpty()) {
             try {
-                AppConfig.ads.ad_network = AdNetworkType.valueOf(remote.getString("ad_network"));
+                // AppConfig.ads.ad_network = AdNetworkType.valueOf(remote.getString("ad_network"));
             } catch (Exception e) {
             }
         }

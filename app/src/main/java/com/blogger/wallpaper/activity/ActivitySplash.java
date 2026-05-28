@@ -21,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.blogger.wallpaper.AppConfig;
+import com.blogger.wallpaper.Constants;
 import com.blogger.wallpaper.R;
 import com.blogger.wallpaper.data.ThisApp;
 import com.blogger.wallpaper.databinding.ActivitySplashBinding;
@@ -62,7 +63,7 @@ public class ActivitySplash extends AppCompatActivity {
             new Handler().postDelayed(() -> {
                 if (ActivitySplash.active)
                     dialogFailedRemoteConfig(getString(R.string.message_failed_config));
-            }, 10 * 1000);
+            }, Constants.REMOTE_CONFIG_TIMEOUT_MS);
         } else {
             requestCategoriesData();
         }

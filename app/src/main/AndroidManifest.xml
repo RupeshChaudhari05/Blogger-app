@@ -8,12 +8,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
-    <uses-permission android:name="android.permission.Ad_ID" />
-    <uses-permission android:name="android.permission.READ_CLIPBOARD" />
+    <!-- Required for Google Advertising ID on API 33+ -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
 
     <application
@@ -23,7 +25,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Waller">
+        android:theme="@style/Theme.Quotes">
 
         <receiver android:name=".TopWidget"
             android:exported="true">
@@ -71,12 +73,12 @@
         <activity
             android:name=".activity.ActivityListingDetail"
             android:exported="false"
-            android:theme="@style/Theme.Waller.Translucent" />
+            android:theme="@style/Theme.Quotes.Translucent" />
         <activity
             android:name=".activity.ActivityDialogNotification"
             android:excludeFromRecents="true"
             android:exported="false"
-            android:theme="@style/Theme.Waller.Dialog" />
+            android:theme="@style/Theme.Quotes.Dialog" />
         <activity
             android:name=".activity.ActivityWebView"
             android:exported="false" />

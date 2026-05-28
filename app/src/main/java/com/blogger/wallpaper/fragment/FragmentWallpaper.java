@@ -44,8 +44,7 @@ public class FragmentWallpaper extends Fragment {
     private FragmentWallpaperBinding binding;
     private AdapterListing adapter;
     private boolean allLoaded = false;
-
-    public int page = 1;
+    private boolean isLoading = false;
 
     public static FragmentWallpaper instance() {
         return new FragmentWallpaper();
@@ -56,7 +55,7 @@ public class FragmentWallpaper extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentWallpaperBinding.inflate(inflater, container, false);
         initComponent();
-        requestAction(1);
+        requestAction(true);
         return binding.getRoot();
     }
 
@@ -73,19 +72,9 @@ public class FragmentWallpaper extends Fragment {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (!recyclerView.canScrollVertically(1)) {
-                    // Bottom of the page reached
-                    if (allLoaded) {
-                        adapter.setLoaded();
-                    } else {
-                        int next_page = page + 1;
-                        Log.d("!!!!!!!!",next_page+"");
-                        requestAction(next_page);
-                    }
-
-                   // int nextPage = page + 1;
-                            //adapter.getNextPage(); // Implement a method to get the next page number
-                    //requestAction(nextPage);
+                if (!recyclerView.canScrollVertically(1) && !allLoaded && !isLoading) {
+                    // Bottom of the page reached and not already loading
+                    requestAction(false);
                 }
             }
         });
@@ -108,63 +97,62 @@ public class FragmentWallpaper extends Fragment {
                     }
                 } else if (type.equals(AdapterListing.ActionType.CATEGORY.name())) {
                     adapter.resetListData();
-                    requestAction(1);
+                    allLoaded = false;
+                    ThisApp.pref().setTokenValue(""); // Reset token for new category
+                    requestAction(true);
                 }
             }
 
             @Override
             public void onLoadMore(int page) {
-                Log.d("RRRRRRR","RRRRRRRRRRRRRR"+allLoaded);
-                super.onLoadMore(page);
-                if (allLoaded) {
+                if (!allLoaded && !isLoading) {
+                    requestAction(false);
+                } else if (allLoaded) {
                     adapter.setLoaded();
-                } else {
-                    int next_page = page + 1;
-                    Log.d("!!!!!!!!",next_page+"");
-                    requestAction(next_page);
                 }
             }
         });
 
         binding.swipeRefresh.setOnRefreshListener(() -> {
             allLoaded = false;
+            isLoading = false;
             adapter.resetListData();
-            requestAction(1);
+            ThisApp.pref().setTokenValue(""); // Reset token for refresh
+            requestAction(true);
         });
     }
 
-    private void requestAction(final int page_no) {
-        if (page_no == 1) {
+    private void requestAction(boolean isInitialLoad) {
+        if (isLoading) return; // Prevent duplicate requests
+        isLoading = true;
+        if (isInitialLoad) {
             showNoItemView(false);
             swipeProgress(true);
         } else {
             adapter.setLoadingOrFailed(null);
         }
-        request(page_no);
+        request();
     }
 
-    private void request(Integer pageNo) {
-    Log.d("Page number",""+pageNo+ ThisApp.pref().getTokenValue());
-        String tokenValue;
-        if(pageNo!=1) {
-            tokenValue = ThisApp.pref().getTokenValue();
-        }else{
-            tokenValue="";
-        }
-        Log.d("DTA",tokenValue);
-        Log.d("URL",geturl(CATEGORY,adapter.selectedCategory,tokenValue));
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, geturl(CATEGORY,adapter.selectedCategory,tokenValue), new Response.Listener<String>() {
+    private void request() {
+        String tokenValue = ThisApp.pref().getTokenValue();
+        Log.d("DTA", tokenValue);
+        Log.d("URL", geturl(CATEGORY, adapter.selectedCategory, tokenValue));
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, geturl(CATEGORY, adapter.selectedCategory, tokenValue), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                isLoading = false;
                 // Handle response
                 //Log.d("DTA",response);
-                List<Listing> sample = parseJsonResponse(response,getContext());
-                allLoaded = sample.size() < AppConfig.general.listing_pagination_count || sample.isEmpty();
+                List<Listing> sample = parseJsonResponse(response, getContext());
+                boolean hasMore = !ThisApp.pref().getTokenValue().isEmpty();
+                allLoaded = sample.size() < AppConfig.general.listing_pagination_count || !hasMore;
                 displayApiResult(sample);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                isLoading = false;
                 // Handle error
                 // if (error != null) Log.e("Error", Objects.requireNonNull(error.getMessage()));
                 onFailRequest();
@@ -176,6 +164,7 @@ public class FragmentWallpaper extends Fragment {
     }
 
     private void onFailRequest() {
+        isLoading = false;
         swipeProgress(false);
         if (Tools.isConnect(getActivity())) {
             adapter.setLoadingOrFailed(getString(R.string.failed_text));

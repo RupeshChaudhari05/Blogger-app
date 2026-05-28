@@ -1,9 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/Widget.Waller.AppWidget.Container"
+    style="@style/Widget.Quotes.AppWidget.Container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/widg_tra"
-    android:theme="@style/Theme.Waller.AppWidgetContainer">
+    android:theme="@style/Theme.Quotes.AppWidgetContainer">
 
         <LinearLayout
             android:gravity="center"

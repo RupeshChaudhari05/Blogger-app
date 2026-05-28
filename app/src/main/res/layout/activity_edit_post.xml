@@ -284,15 +284,15 @@
                     <ImageView
                         android:layout_width="@dimen/_40sdp"
                         android:layout_height="@dimen/_40sdp"
-                        android:src="@drawable/icons8_plus_30"
-                        android:contentDescription="@string/app_name"
+                        android:src="@drawable/ic_burst_mode"
+                        android:contentDescription="Pick from gallery"
                         app:tint="@color/black" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_5sdp"
-                        android:text="Upload"
+                        android:text="Gallery"
                         android:textColor="@color/black"
                         android:textSize="@dimen/spacing_12"
                         android:textStyle="bold" />
@@ -312,8 +312,8 @@
                     <ImageView
                         android:layout_width="@dimen/_40sdp"
                         android:layout_height="@dimen/_40sdp"
-                        android:src="@drawable/ic_settings"
-                        android:contentDescription="@string/app_name"
+                        android:src="@drawable/ic_aspect_ratio"
+                        android:contentDescription="Change canvas size"
                         app:tint="@color/black" />
 
                     <TextView
@@ -368,8 +368,8 @@
                     <ImageView
                         android:layout_width="@dimen/_40sdp"
                         android:layout_height="@dimen/_40sdp"
-                        android:src="@drawable/ic_data_usage"
-                        android:contentDescription="@string/app_name"
+                        android:src="@drawable/ic_palette"
+                        android:contentDescription="Text color"
                         app:tint="@color/black" />
 
                     <TextView
@@ -425,8 +425,8 @@
                     <ImageView
                         android:layout_width="@dimen/_40sdp"
                         android:layout_height="@dimen/_40sdp"
-                        android:src="@drawable/moon_stars_24"
-                        android:contentDescription="@string/app_name"
+                        android:src="@drawable/ic_menu_wallpaper"
+                        android:contentDescription="Change background"
                         app:tint="@color/black" />
 
                     <TextView

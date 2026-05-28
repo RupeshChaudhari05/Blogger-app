@@ -11,9 +11,9 @@ android {
     defaultConfig {
         applicationId "com.blogger.wallpaper"
         minSdk 19
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        targetSdk 34
+        versionCode 2
+        versionName "1.1"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
@@ -22,9 +22,60 @@ android {
         viewBinding true
     }
 
+    // PRODUCT FLAVORS FOR MULTI-APP PUBLISHING
+    // Each flavor represents a different branded app variant
+    // Build with: gradlew assembleQuotesRelease, assembleInspireRelease, etc.
+    flavorDimensions "branding"
+    
+    productFlavors {
+        // VARIANT 1: Quotes (Original)
+        quotes {
+            dimension "branding"
+            applicationId "com.blogger.wallpaper"
+            versionNameSuffix ""
+            manifestPlaceholders = [
+                appNameOverride: "Quotes",
+                notificationChannel: "quotes_channel"
+            ]
+        }
+        
+        // VARIANT 2: InspireMe
+        inspire {
+            dimension "branding"
+            applicationId "com.blogger.inspire"
+            versionNameSuffix "-inspire"
+            manifestPlaceholders = [
+                appNameOverride: "InspireMe",
+                notificationChannel: "inspire_channel"
+            ]
+        }
+        
+        // VARIANT 3: MotivateMe
+        motivate {
+            dimension "branding"
+            applicationId "com.blogger.motivate"
+            versionNameSuffix "-motivate"
+            manifestPlaceholders = [
+                appNameOverride: "MotivateMe",
+                notificationChannel: "motivate_channel"
+            ]
+        }
+        
+        // VARIANT 4: WisdomHub
+        wisdom {
+            dimension "branding"
+            applicationId "com.blogger.wisdom"
+            versionNameSuffix "-wisdom"
+            manifestPlaceholders = [
+                appNameOverride: "WisdomHub",
+                notificationChannel: "wisdom_channel"
+            ]
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -43,13 +94,14 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'androidx.browser:browser:1.8.0'
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
     implementation 'com.android.volley:volley:1.2.1'
-    implementation 'org.apache.commons:commons-io:1.3.2'
+    
+    // FIXED: Updated deprecated commons-io from 1.3.2 (2009) to 2.16.1 (latest)
+    implementation 'commons-io:commons-io:2.16.1'
 
     // one signal
     implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
@@ -58,18 +110,22 @@ dependencies {
     implementation 'com.google.firebase:firebase-config:21.6.3'
     implementation 'com.google.android.gms:play-services-measurement-api:21.6.2'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
-    implementation 'com.github.bumptech.glide:glide:4.13.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.1'
+    
+    // FIXED: Updated Glide from 4.13.1 to 4.16.0 for better stability
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
-    implementation 'joda-time:joda-time:2.10.14'
+    // FIXED: Updated Joda-time from 2.10.14 to 2.12.7
+    implementation 'joda-time:joda-time:2.12.7'
     implementation 'org.jsoup:jsoup:1.15.4'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.1.4'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.github.jd-alexander:LikeButton:0.2.3'
 
-    // ad network
-    implementation 'com.github.dream-space:dreamspace-ads-sdk:1.1.0'
+    // ad network - DISABLED: artifact unavailable
+    // TODO: Replace with native AdMob when ready
+    // implementation 'com.github.dream-space:dreamspace-ads-sdk:4.0.6-all'
     implementation 'com.makeramen:roundedimageview:2.3.0'
 
 }

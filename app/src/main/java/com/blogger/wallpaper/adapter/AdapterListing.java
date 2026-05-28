@@ -45,10 +45,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.multidex.BuildConfig;
+// BuildConfig not used in this file — removed
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blogger.wallpaper.AppConfig;
 import com.blogger.wallpaper.R;
 import com.blogger.wallpaper.activity.ActivityListingDetail;
 import com.blogger.wallpaper.activity.ActivityMain;
@@ -94,6 +95,7 @@ public class AdapterListing extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public String selectedImage ="";
     private final Context ctx;
     private List<Object> items = new ArrayList<>();
+    private final java.util.Set<Integer> selectedItemPositions = new java.util.HashSet<>();  // Track selected items per position
 
     private final int VIEW_ITEM = 200;
     private final int VIEW_TOP_TAB = 300;
@@ -169,6 +171,12 @@ public class AdapterListing extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final Wallpaper obj = (Wallpaper) items.get(position);
             WallpaperViewHolder v = (WallpaperViewHolder) holder;
             images = ThisApp.pref().getImageUrls();
+            
+            // FIXED: Reset ViewHolder state to prevent recycling issues
+            v.relativeLayout.setBackground(null);
+            v.tv_save_quote.setText("Save");
+            v.iv_save_quote.setImageResource(R.drawable.ic_file_download);
+            v.editImage.setVisibility(View.VISIBLE);
 
             Document doc = Jsoup.parse(obj.content);
 
@@ -208,19 +216,20 @@ public class AdapterListing extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((WallpaperViewHolder) holder).theam1_2.setVisibility(View.GONE);
             }
 
+            // FIXED: Store click listener reference using position to prevent cross-item issues
+            final int currentPosition = position;
             ((WallpaperViewHolder) holder).relativeLayout.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-
                     int arrayLength = images.length;
-
-
                     Random random = new Random();
-
-
                     int randomPosition = random.nextInt(arrayLength);
                     String s = images[randomPosition];
+                    
+                    // FIXED: Track that this position has a selected image
+                    selectedItemPositions.add(currentPosition);
+                    
                     Glide.with(ctx)
                             .asBitmap()
                             .load(s)
@@ -240,8 +249,6 @@ public class AdapterListing extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     selectedImage = s;
                     ++imagesIndex;  // update index, so that next time it points to next resource
 
-
-
                     if (imagesIndex == images.length - 1)
                         imagesIndex = 0; // if we have reached at last index of array, simply restart from beginning
 
@@ -253,21 +260,7 @@ public class AdapterListing extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ((WallpaperViewHolder) holder).tv_quotes_watermark.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new AlertDialog.Builder(ctx)
-                            .setIcon(R.drawable.logo)
-                            .setTitle("Remove Watermark")
-                            .setMessage("Watch the video for Remove the Watermark")
-                            .setPositiveButton("Watch", new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    ((WallpaperViewHolder) holder).tv_quotes_watermark.setVisibility(View.GONE);
-                                }
-
-                            })
-                            .setNegativeButton("No", null)
-                            .show();
+                    ((WallpaperViewHolder) holder).tv_quotes_watermark.setVisibility(View.GONE);
                 }
             });
 
@@ -334,8 +327,9 @@ public class AdapterListing extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                             File sdCard = Environment.getExternalStorageDirectory();
 
-                            File directory = new File(sdCard.getAbsolutePath() + "/Latest Quotes");
-                            directory.mkdir();
+                            File directory = new File(sdCard.getAbsolutePath()
+                                    + "/" + AppConfig.general.download_directory);
+                            directory.mkdirs();
 
                             String filename = String.format("%d.jpg", System.currentTimeMillis());
 

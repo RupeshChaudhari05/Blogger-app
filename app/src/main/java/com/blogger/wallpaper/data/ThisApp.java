@@ -1,15 +1,15 @@
 package com.blogger.wallpaper.data;
 
 import android.app.Application;
-import android.location.Location;
 
-import androidx.multidex.BuildConfig;
+import com.blogger.wallpaper.BuildConfig;
 
 import com.blogger.wallpaper.AppConfig;
 import com.blogger.wallpaper.advertise.AdNetworkHelper;
 import com.blogger.wallpaper.model.Wallpaper;
 import com.blogger.wallpaper.notification.NotificationHelper;
 import com.blogger.wallpaper.room.AppDatabase;
+import com.blogger.wallpaper.room.AsyncDAOHelper;
 import com.blogger.wallpaper.room.DAO;
 import com.blogger.wallpaper.room.table.NotificationEntity;
 import com.blogger.wallpaper.utils.Tools;
@@ -29,6 +29,7 @@ public class ThisApp extends Application {
     private static ThisApp mInstance;
     private static SharedPref sharedPref;
     private static DAO dao;
+    private static AsyncDAOHelper asyncDAO;
 
     public static synchronized SharedPref pref() {
         return sharedPref;
@@ -38,15 +39,21 @@ public class ThisApp extends Application {
         return dao;
     }
 
+    /**
+     * Get AsyncDAOHelper for non-blocking database operations.
+     * RECOMMENDED: Use this instead of dao() to avoid main thread blocking.
+     */
+    public static synchronized AsyncDAOHelper asyncDao() {
+        return asyncDAO;
+    }
+
     public static synchronized ThisApp get() {
         return mInstance;
     }
 
-    private Location location = null;
-    private List<String> categories = new ArrayList<>();
-
     private NotificationEntity notification;
     private FirebaseRemoteConfig firebaseRemoteConfig;
+    private List<String> categories = new ArrayList<>();
 
     // used for swipe left right
     public static List<Wallpaper> itemsWallpaper = new ArrayList<>();
@@ -57,6 +64,7 @@ public class ThisApp extends Application {
         mInstance = this;
         sharedPref = new SharedPref(this);
         dao = AppDatabase.getDb(this).get();
+        asyncDAO = AsyncDAOHelper.with(dao, AppDatabase.getDatabaseExecutor());
 
         initFirebase();
         initRemoteConfig();
@@ -109,13 +117,5 @@ public class ThisApp extends Application {
     public void setCategories(List<String> categories) {
         if (AppConfig.general.sort_category_alphabetically) Collections.sort(categories);
         this.categories = categories;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 }

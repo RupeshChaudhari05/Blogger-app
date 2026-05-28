@@ -3,33 +3,33 @@ package com.blogger.wallpaper.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.blogger.wallpaper.Constants;
+
 public class PrefManager {
-    private static final String PREF_NAME = "status_app";
-    String TAG_NIGHT_MODE = "nightmode";
     Context _context;
     SharedPreferences.Editor editor;
     SharedPreferences pref;
 
     public PrefManager(Context context) {
         this._context = context;
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_NAME, 0);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREF_FILE_STATUS, 0);
         this.pref = sharedPreferences;
         this.editor = sharedPreferences.edit();
     }
 
     public void setBoolean(String str, Boolean bool) {
         this.editor.putBoolean(str, bool.booleanValue());
-        this.editor.commit();
+        this.editor.apply();
     }
 
     public void setString(String str, String str2) {
         this.editor.putString(str, str2);
-        this.editor.commit();
+        this.editor.apply();
     }
 
     public void setInt(String str, int i) {
         this.editor.putInt(str, i);
-        this.editor.commit();
+        this.editor.apply();
     }
 
     public boolean getBoolean(String str) {
@@ -39,7 +39,7 @@ public class PrefManager {
     public void remove(String str) {
         if (this.pref.contains(str)) {
             this.editor.remove(str);
-            this.editor.commit();
+            this.editor.apply();
         }
     }
 
@@ -51,18 +51,14 @@ public class PrefManager {
         return this.pref.getInt(str, 0);
     }
 
-
-    //save
-    public void setNightModeState(Boolean state){
-        SharedPreferences.Editor editor= pref.edit();
-        editor.putBoolean("NightMode",state);
-        editor.commit();
+    public void setNightModeState(Boolean state) {
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean(Constants.PREF_NIGHT_MODE, state);
+        editor.apply();
     }
 
-    //load
-    public Boolean loadNightModeState(){
-        Boolean state = pref.getBoolean("NightMode",false);
-        return state;
+    public Boolean loadNightModeState() {
+        return pref.getBoolean(Constants.PREF_NIGHT_MODE, false);
     }
 
 }

@@ -52,7 +52,8 @@ public class AdapterTextColourPicker extends RecyclerView.Adapter<AdapterTextCol
 
                 if(nameofmodule.equals("bgTextcolor"))
                 {
-                    EditPost.getInstance().setTextbackgroundcolor(modelColorListArrayList.get(position).getColour());
+                    EditPost editPost = EditPost.getInstance();
+                    if (editPost != null) editPost.setTextbackgroundcolor(modelColorListArrayList.get(position).getColour());
                 }
 
 //                if(nameofmodule.equals("overlay"))

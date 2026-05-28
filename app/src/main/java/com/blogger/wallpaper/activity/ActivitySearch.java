@@ -55,8 +55,8 @@ public class ActivitySearch extends AppCompatActivity {
 
     private AdapterListing adapter;
     private boolean allLoaded = false;
+    private boolean isLoading = false;
     private String query = "";
-    public int page = 1;
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable workRunnable;
 
@@ -136,19 +136,9 @@ public class ActivitySearch extends AppCompatActivity {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (!recyclerView.canScrollVertically(1)) {
-                    // Bottom of the page reached
-                    if (allLoaded) {
-                        adapter.setLoaded();
-                    } else {
-                        int next_page = page + 1;
-                        Log.d("!!!!!!!!",next_page+"");
-                        requestAction(next_page);
-                    }
-
-                    // int nextPage = page + 1;
-                    //adapter.getNextPage(); // Implement a method to get the next page number
-                    //requestAction(nextPage);
+                if (!recyclerView.canScrollVertically(1) && !allLoaded && !isLoading) {
+                    // Bottom of the page reached and not already loading
+                    requestAction(false);
                 }
             }
         });
@@ -164,11 +154,10 @@ public class ActivitySearch extends AppCompatActivity {
             @Override
             public void onLoadMore(int page) {
                 super.onLoadMore(page);
-                if (allLoaded) {
+                if (!allLoaded && !isLoading) {
+                    requestAction(false);
+                } else if (allLoaded) {
                     adapter.setLoaded();
-                } else {
-                    int next_page = page + 1;
-                    requestAction(next_page);
                 }
             }
         });
@@ -180,32 +169,29 @@ public class ActivitySearch extends AppCompatActivity {
         if (!query.equals("")) {
             adapter.resetListData();
             // request action will be here
-            requestAction(1);
+            requestAction(true);
         } else {
             Toast.makeText(this, R.string.please_fill, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void requestAction(final int page_no) {
-        if (page_no == 1) {
+    private void requestAction(boolean isInitialLoad) {
+        if (isLoading) return; // Prevent duplicate requests
+        isLoading = true;
+        if (isInitialLoad) {
             showNoItemView(false);
             swipeProgress(true);
         } else {
             adapter.setLoadingOrFailed(null);
         }
-        new Handler(Looper.getMainLooper()).postDelayed(() -> requestPost(page_no), 200);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> requestPost(), 200);
     }
 
-    private void requestPost(Integer pageNo) {
+    private void requestPost() {
 
-        String tokenValue;
-        if(pageNo!=1) {
-            tokenValue = ThisApp.pref().getTokenValue();
-        }else{
-            tokenValue="";
-        }
-        Log.d("DTA",tokenValue);
-        Log.d("URL",geturl(SEARCH,query,tokenValue));
+        String tokenValue = ThisApp.pref().getTokenValue();
+        Log.d("DTA", tokenValue);
+        Log.d("URL", geturl(SEARCH, query, tokenValue));
 
 
 //        ParamList param = new ParamList();
@@ -230,21 +216,21 @@ public class ActivitySearch extends AppCompatActivity {
 //            }
 //        });
         Log.d("SEarch",query);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, geturl(SEARCH,query,tokenValue), new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, geturl(SEARCH, query, tokenValue), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                isLoading = false;
                 // Handle response
-                Log.d("SEarch",response);
-                List<Listing> sample = parseJsonResponse(response,getApplicationContext());
-                allLoaded = sample.size() < AppConfig.general.listing_pagination_count || sample.isEmpty();
+                Log.d("SEarch", response);
+                List<Listing> sample = parseJsonResponse(response, getApplicationContext());
+                boolean hasMore = !ThisApp.pref().getTokenValue().isEmpty();
+                allLoaded = sample.size() < AppConfig.general.listing_pagination_count || !hasMore;
                 displayApiResult(sample);
-
-
-
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                isLoading = false;
                 // Handle error
                 if (error != null) Log.e("Error", error.getMessage());
                 onFailRequest();
@@ -256,6 +242,7 @@ public class ActivitySearch extends AppCompatActivity {
     }
 
     private void onFailRequest() {
+        isLoading = false;
         swipeProgress(false);
         if (Tools.isConnect(this)) {
             adapter.setLoadingOrFailed(getString(R.string.failed_text));

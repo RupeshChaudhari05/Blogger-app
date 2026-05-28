@@ -61,8 +61,8 @@ public class AdapterFontList extends RecyclerView.Adapter<AdapterFontList.ViewHo
 
                 }
                 if (checkname.equals("greetingstyle")) {
-                    EditPost.getInstance().setFontStyle(modelFontDetailArrayList.get(position).getFontName());
-
+                    EditPost editPost = EditPost.getInstance();
+                    if (editPost != null) editPost.setFontStyle(modelFontDetailArrayList.get(position).getFontName());
                 }
 
             }

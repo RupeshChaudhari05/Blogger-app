@@ -1,13 +1,22 @@
 package com.blogger.wallpaper.activity;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -51,6 +60,10 @@ public class ActivityFullScreenImage extends AppCompatActivity {
 
     private ArrayList<String> items = new ArrayList<>();
     private int position = 0;
+
+    private boolean textOverlayVisible = false;
+    private Typeface selectedFont = Typeface.DEFAULT;
+    private int selectedColor = Color.WHITE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +111,101 @@ public class ActivityFullScreenImage extends AppCompatActivity {
 
 
         findViewById(R.id.btn_close).setOnClickListener(view -> finish());
+        findViewById(R.id.btn_close).setContentDescription("Close full screen view");
+
+        findViewById(R.id.btn_options).setOnClickListener(view -> showOptionsDialog());
+        findViewById(R.id.btn_options).setContentDescription("Open text customization options");
+
+        findViewById(R.id.btn_toggle_text).setOnClickListener(view -> {
+            textOverlayVisible = !textOverlayVisible;
+            adapter.notifyDataSetChanged();
+            Toast.makeText(this, textOverlayVisible ? "Text overlay shown" : "Text overlay hidden", Toast.LENGTH_SHORT).show();
+        });
+        findViewById(R.id.btn_toggle_text).setContentDescription("Toggle text overlay on image");
     }
 
-    private class AdapterFullScreenImage extends PagerAdapter {
+    private void showOptionsDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_font_color_options);
+        dialog.setTitle("Customize Text");
+
+        Spinner spinnerFont = dialog.findViewById(R.id.spinner_font);
+        Spinner spinnerColor = dialog.findViewById(R.id.spinner_color);
+        Button btnApply = dialog.findViewById(R.id.btn_apply);
+
+        // Font options
+        String[] fonts = {"Default", "Serif", "Sans Serif", "Monospace"};
+        ArrayAdapter<String> fontAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, fonts);
+        fontAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFont.setAdapter(fontAdapter);
+
+        // Color options
+        String[] colors = {"White", "Black", "Red", "Blue", "Green"};
+        ArrayAdapter<String> colorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colors);
+        colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerColor.setAdapter(colorAdapter);
+
+        spinnerFont.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        selectedFont = Typeface.DEFAULT;
+                        break;
+                    case 1:
+                        selectedFont = Typeface.SERIF;
+                        break;
+                    case 2:
+                        selectedFont = Typeface.SANS_SERIF;
+                        break;
+                    case 3:
+                        selectedFont = Typeface.MONOSPACE;
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        spinnerColor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        selectedColor = Color.WHITE;
+                        break;
+                    case 1:
+                        selectedColor = Color.BLACK;
+                        break;
+                    case 2:
+                        selectedColor = Color.RED;
+                        break;
+                    case 3:
+                        selectedColor = Color.BLUE;
+                        break;
+                    case 4:
+                        selectedColor = Color.GREEN;
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        btnApply.setOnClickListener(v -> {
+            adapter.notifyDataSetChanged(); // Refresh to apply changes
+            Toast.makeText(ActivityFullScreenImage.this, "Changes applied", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    public class AdapterFullScreenImage extends PagerAdapter {
 
         private Activity act;
         private List<String> image_paths;
@@ -125,11 +230,20 @@ public class ActivityFullScreenImage extends AppCompatActivity {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             PhotoView image;
+            TextView textOverlay;
             inflater = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View viewLayout = inflater.inflate(R.layout.item_slider_image, container, false);
 
             image = viewLayout.findViewById(R.id.image);
+            textOverlay = viewLayout.findViewById(R.id.text_overlay);
+            if (textOverlay != null) {
+                textOverlay.setTypeface(selectedFont);
+                textOverlay.setTextColor(selectedColor);
+                textOverlay.setText("Sample Text"); // Or get from data
+                textOverlay.setVisibility(textOverlayVisible ? View.VISIBLE : View.GONE);
+            }
             Tools.displayImage(act, image, image_paths.get(position));
+            image.setContentDescription("Image " + (position + 1) + " of " + image_paths.size());
             (container).addView(viewLayout);
 
             return viewLayout;
@@ -142,5 +256,4 @@ public class ActivityFullScreenImage extends AppCompatActivity {
         }
 
     }
-
 }

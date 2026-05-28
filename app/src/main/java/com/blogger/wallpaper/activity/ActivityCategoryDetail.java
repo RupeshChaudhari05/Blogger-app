@@ -59,13 +59,16 @@ public class ActivityCategoryDetail extends AppCompatActivity {
     private ActivityCategoryDetailBinding binding;
     private AdapterListing adapter;
     private boolean allLoaded = false;
+    private boolean isLoading = false;
     private String category;
     private Wallpaper wallpaper;
     private List<Wallpaper> wallpapers = new ArrayList<>();
     private boolean wallpaper_mode = false;
-    public int page = 1;
 
     public static void navigate(ActivityMain activity, Wallpaper w) {
+        Intent i = new Intent(activity, ActivityCategoryDetail.class);
+        i.putExtra(EXTRA_OBJC_WALLPAPER, w);
+        activity.startActivity(i);
     }
 
     @Override
@@ -81,7 +84,7 @@ public class ActivityCategoryDetail extends AppCompatActivity {
         initWallpaperData();
         initToolbar();
         initComponent();
-        requestAction(1);
+        requestAction(true);
         prepareAds();
     }
 
@@ -121,19 +124,9 @@ public class ActivityCategoryDetail extends AppCompatActivity {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (!recyclerView.canScrollVertically(1)) {
-                    // Bottom of the page reached
-                    if (allLoaded) {
-                        adapter.setLoaded();
-                    } else {
-                        int next_page = page + 1;
-                        Log.d("!!!!!!!!",next_page+"");
-                        requestAction(next_page);
-                    }
-
-                    // int nextPage = page + 1;
-                    //adapter.getNextPage(); // Implement a method to get the next page number
-                    //requestAction(nextPage);
+                if (!recyclerView.canScrollVertically(1) && !allLoaded && !isLoading) {
+                    // Bottom of the page reached and not already loading
+                    requestAction(false);
                 }
             }
         });
@@ -159,11 +152,10 @@ public class ActivityCategoryDetail extends AppCompatActivity {
             public void onLoadMore(int page) {
                 super.onLoadMore(page);
                 if (wallpaper_mode) return;
-                if (allLoaded) {
+                if (!allLoaded && !isLoading) {
+                    requestAction(false);
+                } else if (allLoaded) {
                     adapter.setLoaded();
-                } else {
-                    int next_page = page + 1;
-                    requestAction(next_page);
                 }
             }
         });
@@ -171,8 +163,10 @@ public class ActivityCategoryDetail extends AppCompatActivity {
         binding.swipeRefresh.setEnabled(!wallpaper_mode);
         binding.swipeRefresh.setOnRefreshListener(() -> {
             allLoaded = false;
+            isLoading = false;
             adapter.resetListData();
-            requestAction(1);
+            ThisApp.pref().setTokenValue(""); // Reset token for refresh
+            requestAction(true);
         });
     }
 
@@ -184,42 +178,43 @@ public class ActivityCategoryDetail extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void requestAction(final int page_no) {
-        if (page_no == 1) {
+    private void requestAction(boolean isInitialLoad) {
+        if (isLoading) return; // Prevent duplicate requests
+        isLoading = true;
+        if (isInitialLoad) {
             showNoItemView(false);
             swipeProgress(true);
         } else {
             adapter.setLoadingOrFailed(null);
         }
-        request(page_no);
+        request();
     }
 
-    private void request(Integer pageNo) {
-        String tokenValue;
-        if(pageNo!=1) {
-            tokenValue = ThisApp.pref().getTokenValue();
-        }else{
-            tokenValue="";
-        }
-        Log.d("DTA",tokenValue);
-        Log.d("URL",geturl(CATEGORY,adapter.selectedCategory,tokenValue));
+    private void request() {
+        String tokenValue = ThisApp.pref().getTokenValue();
+        Log.d("DTA", tokenValue);
+        Log.d("URL", geturl(CATEGORY, adapter.selectedCategory, tokenValue));
 
         if (wallpaper_mode) {
             displayApiResultPlace(wallpapers);
             allLoaded = (adapter.getItemCount() == ThisApp.dao().getListingCount());
+            isLoading = false;
         } else {
-            StringRequest stringRequest = new StringRequest(Request.Method.GET,geturl(CATEGORY,category,tokenValue), new Response.Listener<String>() {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, geturl(CATEGORY, category, tokenValue), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
+                    isLoading = false;
                     // Handle response
 
-                    List<Listing> sample = parseJsonResponse(response,getApplicationContext());
-                    allLoaded = sample.size() < AppConfig.general.listing_pagination_count || sample.isEmpty();
+                    List<Listing> sample = parseJsonResponse(response, getApplicationContext());
+                    boolean hasMore = !ThisApp.pref().getTokenValue().isEmpty();
+                    allLoaded = sample.size() < AppConfig.general.listing_pagination_count || !hasMore;
                     displayApiResult(sample);
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    isLoading = false;
                     // Handle error
                     if (error != null) Log.e("Error", error.getMessage());
                     onFailRequest();
@@ -233,6 +228,7 @@ public class ActivityCategoryDetail extends AppCompatActivity {
     }
 
     private void onFailRequest() {
+        isLoading = false;
         swipeProgress(false);
         if (Tools.isConnect(this)) {
             adapter.setLoadingOrFailed(getString(R.string.failed_text));

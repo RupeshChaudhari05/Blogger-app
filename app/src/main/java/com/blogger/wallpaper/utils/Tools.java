@@ -54,7 +54,7 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.FileProvider;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.multidex.BuildConfig;
+import com.blogger.wallpaper.BuildConfig;
 
 import com.blogger.wallpaper.AppConfig;
 import com.blogger.wallpaper.R;
@@ -204,16 +204,19 @@ public class Tools {
 
     public static boolean isConnect(Context context) {
         try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-            if (activeNetworkInfo != null) {
-                if (activeNetworkInfo.isConnected() || activeNetworkInfo.isConnectedOrConnecting()) {
-                    return true;
-                } else {
-                    return false;
-                }
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                android.net.Network network = cm.getActiveNetwork();
+                if (network == null) return false;
+                android.net.NetworkCapabilities caps = cm.getNetworkCapabilities(network);
+                return caps != null && (
+                        caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) ||
+                        caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                        caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_ETHERNET));
             } else {
-                return false;
+                //noinspection deprecation
+                NetworkInfo info = cm.getActiveNetworkInfo();
+                return info != null && info.isConnected();
             }
         } catch (Exception e) {
             return false;
@@ -357,6 +360,15 @@ public class Tools {
         cancel_text = dialog.findViewById(R.id.cancel_text);
         tag = dialog.findViewById(R.id.tag);
         tag.setText(ThisApp.pref().getUserTagValue());
+
+        // Set current theme checked
+        String currentTheme = ThisApp.pref().getQuotesThemeValue();
+        if (DEF.equals(currentTheme)) {
+            radioGroup.check(R.id.radioButton);
+        } else if (Yellow.equals(currentTheme)) {
+            radioGroup.check(R.id.radioButton2);
+        }
+
         // Set a listener to the RadioGroup
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -386,6 +398,8 @@ public class Tools {
                 dialog.dismiss();
                 Log.d("AAAA",tag.getText().toString());
                 ThisApp.pref().setUserTagValue(tag.getText().toString());
+                // Restart activity to apply theme changes
+                activity.recreate();
                 //Toast.makeText(activity, "okay clicked", Toast.LENGTH_SHORT).show();
             }
         });
@@ -600,22 +614,18 @@ public class Tools {
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject item = items.getJSONObject(i);
-                Log.d("CCCCCC", item.getString("title")); // Move this inside the loop to log each title
-                if (item.getString("title").equals("category")) {
+                String title = item.getString("title");
+                if (title.equals(com.blogger.wallpaper.Constants.PAGE_TITLE_CATEGORY)) {
                     String text = item.getString("content");
                     String[] labels1 = text.split(",\\s*|\\n");
                     for (String label : labels1) {
                         labels.add(label.trim());
                     }
-                }else if(item.getString("title").equals("Background Images")){
-                   // Document htmlData = Jsoup.parse(item.getString("content"));
-
+                } else if (title.equals(com.blogger.wallpaper.Constants.PAGE_TITLE_BG_IMAGES)) {
                     if (!TextUtils.isEmpty(item.getString("content"))) {
-                       ThisApp.pref().setImageUrls(Tools.findImagesFromContentNew(item.getString("content")));
+                        ThisApp.pref().setImageUrls(Tools.findImagesFromContentNew(item.getString("content")));
                     }
-                }else if(item.getString("title").equals("Background Video")){
-                    // Document htmlData = Jsoup.parse(item.getString("content"));
-
+                } else if (title.equals(com.blogger.wallpaper.Constants.PAGE_TITLE_BG_VIDEO)) {
                     if (!TextUtils.isEmpty(item.getString("content"))) {
                         ThisApp.pref().setVideoUrls(Tools.findVideosFromContent(item.getString("content")));
                     }

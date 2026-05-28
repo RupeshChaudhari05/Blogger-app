@@ -1,10 +1,11 @@
 package com.blogger.wallpaper;
 
+import com.blogger.wallpaper.config.BrandConfig;
 import com.blogger.wallpaper.utils.AppConfigExt;
 
 import java.io.Serializable;
 
-import dreamspace.ads.sdk.data.AdNetworkType;
+// import dreamspace.ads.sdk.data.AdNetworkType;
 
 public class AppConfig extends AppConfigExt implements Serializable {
 
@@ -16,6 +17,13 @@ public class AppConfig extends AppConfigExt implements Serializable {
      * variable with UPPERCASE name will NOT fetch / replace with remote config
      * variable with LOWERCASE name will fetch / replace with remote config
      * See video Remote Config tutorial https://www.youtube.com/watch?v=tOKXwOTqOzA
+     
+     * BRANDING CONFIGURATION:
+     * All "Waller" references have been replaced with BrandConfig for multi-app publishing
+     * To change app name, colors, download directory: See BrandConfig.java
+     * To publish multiple branded versions: Use Gradle product flavors
+     * See MULTI_APP_PUBLISHING.md for detailed instructions
+     
      ----------------------------------------------------------------------------------------------*/
 
     /* set true for fetch config with firebase remote config, */
@@ -27,9 +35,11 @@ public class AppConfig extends AppConfigExt implements Serializable {
     /* config for General Application */
     public static class General {
 
-        /* prefix name for image file saved on device */
-        public String prefix_filename = "waller_";
-        public String download_directory = "Waller";
+        /* prefix name for image file saved on device - USES BRANDING CONFIG */
+        public String prefix_filename = BrandConfig.getFilePrefix();
+        
+        /* download directory for saved images - USES BRANDING CONFIG */
+        public String download_directory = BrandConfig.getDownloadDirectory();
 
         /* true for sort category alphabetically */
         public boolean sort_category_alphabetically = true;
@@ -57,7 +67,7 @@ public class AppConfig extends AppConfigExt implements Serializable {
 
         /* Ad networks selection,
          * Available ad networks ADMOB, FAN, UNITY, IRON SOURCE, APPLOVIN */
-        public AdNetworkType ad_network = AdNetworkType.ADMOB;
+        // public AdNetworkType ad_network = AdNetworkType.ADMOB;
 
         public boolean ad_enable_gdpr = true;
 

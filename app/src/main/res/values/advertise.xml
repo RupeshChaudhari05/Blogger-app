@@ -2,6 +2,6 @@
 <resources>
 
     <!--ADMOB property -->
-    <string name="admob_app_id">ca-app-pub-3940256099942544~1939451525</string>
+    <string name="admob_app_id">YOUR_ADMOB_APP_ID</string>
 
 </resources>
