@@ -11,8 +11,8 @@ public class AppConfigExt {
 
     public static final String CATEGORY = "category";
     public static final String SEARCH = "search";
-    public static final String API_KEY = "AIzaSyCKWz8dKnoDEZ0eHVWdHIqnJm6qTGacQ5U";
-    public static final String BLOG_ID = "8048696154340688049";
+    public static final String API_KEY = "nokey";
+    public static final String BLOG_ID = "no key";
     public static final String BLOGGER_URL_ALL_POST = "https://www.googleapis.com/blogger/v3/blogs/" + BLOG_ID + "/posts?key=" + API_KEY + "&maxResults=10";
     public static final String BLOGGER_URL_ALL_POST_TOP_ONE = "https://www.googleapis.com/blogger/v3/blogs/" + BLOG_ID + "/posts?key=" + API_KEY + "&maxResults=1";
     public  static final String BLOGGER_URL_PAGES = "https://www.googleapis.com/blogger/v3/blogs/" + BLOG_ID + "/pages?key=" + API_KEY;
